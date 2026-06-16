@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brasfoot IA - Protótipo</title>
+    <style>
+        /* CSS: Estilizando nosso Manager */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background-color: #2d2d2d;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+        h1 { color: #4CAF50; margin-top: 0; }
+        .time-box {
+            background: #3d3d3d;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border-left: 5px solid #4CAF50;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 15px;
+        }
+        button:hover { background-color: #45a049; }
+        .placar {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #ffeb3b;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Mini Manager IA</h1>
+        <p>Simulador de Partida Básico</p>
+        
+        <div class="time-box">
+            <h3 id="nome-time1">Time A (Força: --)</h3>
+        </div>
+        
+        <div class="placar" id="placar-jogo">VS</div>
+        
+        <div class="time-box">
+            <h3 id="nome-time2">Time B (Força: --)</h3>
+        </div>
+
+        <button onclick="jogarPartida()">Simular Partida</button>
+    </div>
+
+    <script>
+        // JAVASCRIPT: A lógica do jogo
+        // 1. Criando os times (Base de dados simples)
+        const timeMandante = { nome: "Madrid FC", forca: 85 };
+        const timeVisitante = { nome: "Catalunha FC", forca: 82 };
+
+        // Atualiza a tela com os dados iniciais
+        document.getElementById('nome-time1').innerText = `${timeMandante.nome} (Força: ${timeMandante.forca})`;
+        document.getElementById('nome-time2').innerText = `${timeVisitante.nome} (Força: ${timeVisitante.forca})`;
+
+        // 2. Motor de Simulação (Coração do jogo)
+        function jogarPartida() {
+            // Fator sorte/imprevisto (número aleatório de 0 a 20)
+            const sorteMandante = Math.floor(Math.random() * 21);
+            const sorteVisitante = Math.floor(Math.random() * 21);
+
+            // Pontuação final que define os gols
+            const pontuacaoA = timeMandante.forca + sorteMandante;
+            const pontuacaoB = timeVisitante.forca + sorteVisitante;
+
+            // Convertendo a pontuação em gols de forma matemática simples
+            // Se a pontuação for muito alta, faz mais gols.
+            let golsA = Math.floor((pontuacaoA - 75) / 5);
+            let golsB = Math.floor((pontuacaoB - 75) / 5);
+
+            // Evitar gols negativos caso a força + sorte seja muito baixa
+            golsA = Math.max(0, golsA);
+            golsB = Math.max(0, golsB);
+
+            // Exibe o resultado na tela
+            document.getElementById('placar-jogo').innerText = `${golsA} x ${golsB}`;
+        }
+    </script>
+</body>
+</html>
