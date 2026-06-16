@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FutManager IA</title>
+    <title>FootManAdmin</title>
     <style>
-        /* Cores inspiradas no Football Manager (Dark Mode) */
         :root {
-            --bg-principal: #121824;
-            --bg-card: #1c2434;
-            --bg-sidebar: #0e131f;
-            --accent: #00ff87; /* Verde Brasfoot */
+            --bg-principal: #0b0f19;
+            --bg-card: #151d30;
+            --bg-sidebar: #070a12;
+            --accent: #00ff87; 
             --text: #ffffff;
             --text-muted: #8a99ad;
-            --border: #2c374e;
+            --border: #24314f;
+            --danger: #ff4a4a;
         }
 
         body {
@@ -27,9 +27,9 @@
             overflow: hidden;
         }
 
-        /* Menu Lateral (Sidebar) */
+        /* Menu Lateral */
         .sidebar {
-            width: 240px;
+            width: 260px;
             background-color: var(--bg-sidebar);
             border-right: 1px solid var(--border);
             display: flex;
@@ -40,9 +40,18 @@
         .sidebar h2 {
             text-align: center;
             color: var(--accent);
-            margin-bottom: 30px;
-            font-size: 22px;
+            margin-bottom: 5px;
+            font-size: 24px;
             letter-spacing: 1px;
+            font-weight: 800;
+        }
+        
+        .sidebar .sub {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 35px;
+            text-transform: uppercase;
         }
 
         .menu-btn {
@@ -51,7 +60,7 @@
             color: var(--text-muted);
             padding: 15px 25px;
             text-align: left;
-            font-size: 16px;
+            font-size: 15px;
             cursor: pointer;
             transition: 0.2s;
             border-left: 4px solid transparent;
@@ -59,17 +68,18 @@
 
         .menu-btn:hover, .menu-btn.active {
             color: var(--text);
-            background-color: rgba(255, 255, 255, 0.05);
+            background-color: rgba(255, 255, 255, 0.03);
             border-left-color: var(--accent);
         }
 
-        /* Área de Conteúdo Principal */
+        /* Área Principal */
         .main-content {
             flex: 1;
             padding: 30px;
             overflow-y: auto;
         }
 
+        /* Painel de Status */
         .header-status {
             display: flex;
             justify-content: space-between;
@@ -82,25 +92,20 @@
 
         .status-item span {
             color: var(--text-muted);
-            font-size: 12px;
+            font-size: 11px;
             display: block;
+            text-transform: uppercase;
         }
 
         .status-item strong {
-            color: var(--accent);
+            color: var(--text);
             font-size: 18px;
         }
 
-        /* Telas (Escondidas por padrão, exceto a ativa) */
-        .screen {
-            display: none;
-        }
+        .screen { display: none; }
+        .screen.active { display: block; }
 
-        .screen.active {
-            display: block;
-        }
-
-        /* Tabelas de Jogadores e Classificação */
+        /* Estilização das Tabelas */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -108,114 +113,183 @@
             border-radius: 8px;
             overflow: hidden;
             border: 1px solid var(--border);
+            margin-top: 15px;
         }
 
         th, td {
-            padding: 12px 15px;
+            padding: 14px 18px;
             text-align: left;
             border-bottom: 1px solid var(--border);
         }
 
         th {
-            background-color: rgba(0, 0, 0, 0.2);
+            background-color: rgba(0, 0, 0, 0.3);
             color: var(--text-muted);
-            font-size: 13px;
+            font-size: 12px;
             text-transform: uppercase;
         }
 
-        tr:hover {
-            background-color: rgba(255, 255, 255, 0.02);
-        }
+        tr:hover { background-color: rgba(255, 255, 255, 0.01); }
 
         .badge-pos {
-            padding: 3px 6px;
+            padding: 4px 8px;
             border-radius: 4px;
             font-size: 11px;
             font-weight: bold;
-            background-color: #334155;
+            background-color: #1e293b;
+            color: #94a3b8;
         }
+
+        /* Elementos de Formulário e Botões */
+        .tactic-box, .market-filter {
+            background-color: var(--bg-card);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        select, button.action-btn {
+            background: #0b0f19;
+            color: white;
+            border: 1px solid var(--border);
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        button.action-btn.buy {
+            background-color: var(--accent);
+            color: #000;
+            font-weight: bold;
+            border: none;
+        }
+
+        button.action-btn.buy:hover { opacity: 0.9; }
 
         .btn-jogar {
             background-color: var(--accent);
             color: #000;
             border: none;
-            padding: 15px 30px;
+            padding: 18px;
             font-size: 18px;
             font-weight: bold;
             border-radius: 6px;
             cursor: pointer;
             width: 100%;
             transition: 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 255, 135, 0.1);
         }
 
-        .btn-jogar:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 255, 135, 0.3);
+         Tarjeta de Próximo Jogo {
+            background: linear-gradient(135deg, #151d30 0%, #0b0f19 100%);
+            padding: 40px;
+            text-align: center;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin-bottom: 25px;
         }
     </style>
 </head>
 <body>
 
-    <!-- MENU LATERAL ESTILO FM/BRASFOOT -->
+    <!-- MENU LATERAL -->
     <div class="sidebar">
-        <h2>FUTMANAGER IA</h2>
+        <h2>FootManAdmin</h2>
+        <div class="sub">Painel de Controle Tático</div>
+        
         <button class="menu-btn active" onclick="mudarTela('elenco', this)">📋 Elenco</button>
-        <button class="menu-btn" onclick="mudarTela('tactics', this)">📐 Tática</button>
-        <button class="menu-btn" onclick="mudarTela('classificacao', this)">🏆 Classificação</button>
+        <button class="menu-btn" onclick="mudarTela('tactics', this)">📐 Táticas</button>
+        <button class="menu-btn" onclick="mudarTela('mercado', this)">🤝 Transferências</button>
+        <button class="menu-btn" onclick="mudarTela('classificacao', this)">🏆 Campeonato</button>
         <button class="menu-btn" onclick="mudarTela('proximo-jogo', this)">⚽ Próximo Jogo</button>
     </div>
 
     <!-- CONTEÚDO PRINCIPAL -->
     <div class="main-content">
         
-        <!-- Barra de Status Superior (Dinâmica) -->
+        <!-- Barra Superior Global -->
         <div class="header-status">
             <div class="status-item">
-                <span>SEU CLUBE</span>
-                <strong id="status-time">Piraporinha FC</strong>
+                <span>Clube Atual</span>
+                <strong style="color: var(--accent);">Piraporinha FC</strong>
             </div>
             <div class="status-item">
-                <span>FINANÇAS</span>
-                <strong style="color: #4caf50;">R$ 15.000.000</strong>
+                <span>Orçamento disponível</span>
+                <strong id="financas-txt" style="color: #4caf50;">R$ 20.000.000</strong>
             </div>
             <div class="status-item">
-                <span>PRÓXIMO ADVERSÁRIO</span>
-                <strong id="status-adversario">Íbis SC</strong>
+                <span>Próxima Rodada</span>
+                <strong id="status-adversario">vs Íbis SC</strong>
             </div>
         </div>
 
-        <!-- TELA 1: ELENCO -->
+        <!-- 1. TELA: ELENCO -->
         <div id="tela-elenco" class="screen active">
-            <h2>Elenco do Seu Time</h2>
+            <h2>Gestão de Elenco</h2>
             <table>
                 <thead>
                     <tr>
                         <th>Posição</th>
                         <th>Nome</th>
                         <th>Idade</th>
-                        <th>Força (OVER)</th>
+                        <th>Força (OVR)</th>
+                        <th>Valor</th>
                     </tr>
                 </thead>
                 <tbody id="tabela-jogadores">
-                    <!-- Preenchido por IA/JS -->
+                    <!-- Gerado dinamicamente -->
                 </tbody>
             </table>
         </div>
 
-        <!-- TELA 2: TÁTICA -->
+        <!-- 2. TELA: TÁTICAS -->
         <div id="tela-tactics" class="screen">
-            <h2>Formação Tática</h2>
-            <p>Escolha sua mentalidade para o próximo jogo:</p>
-            <select style="padding: 10px; background: var(--bg-card); color: white; border: 1px solid var(--border); border-radius: 4px;">
-                <option>4-3-3 (Ofensivo)</option>
-                <option selected>4-4-2 (Equilibrado)</option>
-                <option>5-3-2 (Defensivo)</option>
-            </select>
+            <h2>Painel Tático</h2>
+            <div class="tactic-box">
+                <label style="margin-right: 15px;"><strong>Formação:</strong></label>
+                <select id="formacao-select">
+                    <option>4-4-2 (Equilibrado)</option>
+                    <option>4-3-3 (Ofensivo)</option>
+                    <option>3-5-2 (Consistente)</option>
+                    <option>5-4-1 (Retranca)</option>
+                </select>
+                
+                <label style="margin-left: 25px; margin-right: 15px;"><strong>Mentalidade:</strong></label>
+                <select id="mentalidade-select">
+                    <option>Normal</option>
+                    <option style="color: #ff4a4a;">Atacar Tudo</option>
+                    <option style="color: #50b6ff;">Contra-Ataque</option>
+                </select>
+            </div>
+            <p style="color: var(--text-muted); font-size: 14px;">* A formação escolhida altera os bônus de simulação durante as partidas.</p>
         </div>
 
-        <!-- TELA 3: CLASSIFICAÇÃO -->
+        <!-- 3. TELA: TRANSFERÊNCIAS -->
+        <div id="tela-mercado" class="screen">
+            <h2>Mercado de Transferências</h2>
+            <p style="color: var(--text-muted);">Contrate novos atletas para reforçar o FootManAdmin.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Posição</th>
+                        <th>Nome</th>
+                        <th>Idade</th>
+                        <th>Força (OVR)</th>
+                        <th>Preço de Compra</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-mercado">
+                    <!-- Jogadores do mercado gerados aqui -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 4. TELA: CAMPEONATO -->
         <div id="tela-classificacao" class="screen">
-            <h2>Tabela do Campeonato</h2>
+            <h2>Tabela de Classificação</h2>
             <table>
                 <thead>
                     <tr>
@@ -224,71 +298,124 @@
                         <th>Pts</th>
                         <th>J</th>
                         <th>V</th>
+                        <th>E</th>
+                        <th>D</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td>1</td><td>Piraporinha FC</td><td>0</td><td>0</td><td>0</td></tr>
-                    <tr><td>2</td><td>Íbis SC</td><td>0</td><td>0</td><td>0</td></tr>
-                    <tr><td>3</td><td>Bangu Atlético</td><td>0</td><td>0</td><td>0</td></tr>
-                    <tr><td>4</td><td>XV de Piracicaba</td><td>0</td><td>0</td><td>0</td></tr>
+                    <tr><td>1</td><td><b>Piraporinha FC</b></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                    <tr><td>2</td><td>Íbis SC</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                    <tr><td>3</td><td>Bangu Atlético</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                    <tr><td>4</td><td>XV de Piracicaba</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
                 </tbody>
             </table>
         </div>
 
-        <!-- TELA 4: PRÓXIMO JOGO -->
+        <!-- 5. TELA: PRÓXIMO JOGO -->
         <div id="tela-proximo-jogo" class="screen">
-            <h2>Rodada 1</h2>
-            <div style="background: var(--bg-card); padding: 30px; text-align: center; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px;">
-                <h3 style="font-size: 24px;">Piraporinha FC VS Íbis SC</h3>
-                <p style="color: var(--text-muted);">Estádio Municipal</p>
+            <h2>Preparação da Partida</h2>
+            <div style="background: var(--bg-card); padding: 40px; text-align: center; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 25px;">
+                <span style="color: var(--accent); font-weight: bold; text-transform: uppercase; font-size: 12px;">Rodada 1</span>
+                <h3 style="font-size: 28px; margin: 15px 0;">Piraporinha FC vs Íbis SC</h3>
+                <p style="color: var(--text-muted); margin: 0;">Local: Estádio Nacional</p>
             </div>
-            <button class="btn-jogar" onclick="alert('Simulando jogo... Próximo passo da IA!')">INICIAR PARTIDA</button>
+            <button class="btn-jogar" onclick="alert('Partida iniciada! No próximo comando a IA criará os gols baseados nas suas táticas.')">ENVIAR TIME A CAMPO</button>
         </div>
 
     </div>
 
     <script>
-        // Banco de dados dos jogadores do seu time
-        const jogadores = [
-            { pos: "GOL", nome: "Mão de Alface", idade: 28, forca: 65 },
-            { pos: "DEF", nome: "Zagueiro Botina", idade: 31, forca: 70 },
-            { pos: "DEF", nome: "Lateral Avenida", idade: 22, forca: 68 },
-            { pos: "MEI", nome: "Maestro Cansado", idade: 34, forca: 74 },
-            { pos: "MEI", nome: "Volante Pitbull", idade: 26, forca: 71 },
-            { pos: "ATA", nome: "Artilheiro de IA", idade: 21, forca: 75 },
-            { pos: "ATA", nome: "Chuta Fofo", idade: 19, forca: 60 }
+        // Dados Financeiros e de Elenco
+        let orcamento = 20000000;
+        
+        const meusJogadores = [
+            { pos: "GOL", nome: "Mão de Alface", idade: 28, forca: 65, valor: 1200000 },
+            { pos: "DEF", nome: "Zagueiro Botina", idade: 31, forca: 70, valor: 2500000 },
+            { pos: "DEF", nome: "Lateral Avenida", idade: 22, forca: 68, valor: 1800000 },
+            { pos: "MEI", nome: "Maestro Cansado", idade: 34, forca: 74, valor: 3000000 },
+            { pos: "MEI", nome: "Volante Pitbull", idade: 26, forca: 71, valor: 2800000 },
+            { pos: "ATA", nome: "Artilheiro de IA", idade: 21, forca: 75, valor: 5500000 }
         ];
 
-        // Função para carregar os jogadores na tabela
+        const mercadoJogadores = [
+            { pos: "GOL", nome: "Paredão Seguro", idade: 25, forca: 78, preco: 6000000 },
+            { pos: "DEF", nome: "Besta Enjaulada", idade: 29, forca: 80, preco: 7500000 },
+            { pos: "MEI", nome: "Garçom de Elite", idade: 24, forca: 82, preco: 9000000 },
+            { pos: "ATA", nome: "Fenômeno da Vila", idade: 18, forca: 79, preco: 8500000 }
+        ];
+
+        // Atualizar visualização do Elenco
         function renderizarElenco() {
             const tabela = document.getElementById("tabela-jogadores");
             tabela.innerHTML = "";
-            jogadores.forEach(j => {
+            meusJogadores.forEach(j => {
                 tabela.innerHTML += `
                     <tr>
                         <td><span class="badge-pos">${j.pos}</span></td>
                         <td><b>${j.nome}</b></td>
                         <td>${j.idade} anos</td>
-                        <td style="color: #00ff87; font-weight: bold;">${j.forca}</td>
+                        <td style="color: var(--accent); font-weight: bold;">${j.forca}</td>
+                        <td>R$ ${j.valor.toLocaleString('pt-BR')}</td>
                     </tr>
                 `;
             });
         }
 
-        // Sistema de navegação de menus (Abas)
+        // Atualizar visualização do Mercado
+        function renderizarMercado() {
+            const tabela = document.getElementById("tabela-mercado");
+            tabela.innerHTML = "";
+            mercadoJogadores.forEach((j, index) => {
+                tabela.innerHTML += `
+                    <tr>
+                        <td><span class="badge-pos">${j.pos}</span></td>
+                        <td><b>${j.nome}</b></td>
+                        <td>${j.idade} anos</td>
+                        <td style="color: #ffeb3b; font-weight: bold;">${j.forca}</td>
+                        <td style="color: #4caf50; font-weight: bold;">R$ ${j.preco.toLocaleString('pt-BR')}</td>
+                        <td><button class="action-btn buy" onclick="comprarJogador(${index})">Contratar</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Lógica de Compra de Jogador
+        function comprarJogador(index) {
+            const jogador = mercadoJogadores[index];
+            if (orcamento >= jogador.preco) {
+                orcamento -= jogador.preco;
+                document.getElementById("financas-txt").innerText = `R$ ${orcamento.toLocaleString('pt-BR')}`;
+                
+                // Transfere o jogador de lista
+                meusJogadores.push({
+                    pos: jogador.pos,
+                    nome: j.nome,
+                    idade: j.idade,
+                    forca: j.forca,
+                    valor: j.preco
+                });
+                
+                mercadoJogadores.splice(index, 1);
+                
+                renderizarElenco();
+                renderizarMercado();
+                alert(`Sucesso! ${jogador.nome} agora faz parte do seu elenco.`);
+            } else {
+                alert("Dinheiro insuficiente para realizar esta transferência!");
+            }
+        }
+
+        // Controle de Abas
         function mudarTela(telaId, botao) {
-            // Esconde todas as telas
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            // Desativa todos os botões do menu
             document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
-            
-            // Mostra a tela selecionada e ativa o botão correspondente
             document.getElementById(`tela-${telaId}`).classList.add('active');
             botao.classList.add('active');
         }
 
-        // Inicializa o elenco ao abrir o site
+        // Boot do Jogo
         renderizarElenco();
+        renderizarMercado();
     </script>
 </body>
 </html>
