@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FootManAdmin</title>
+    <style>
+        :root {
+            --bg-principal: #0b0f19;
+            --bg-card: #151d30;
+            --bg-sidebar: #070a12;
+            --accent: #38003c; /* Roxo clássico da Premier League */
+            --accent-neon: #00ff87; /* Verde neon da PL */
+            --text: #ffffff;
+            --text-muted: #8a99ad;
+            --border: #24314f;
+            --danger: #ff4a4a;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg-principal);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Menu Lateral */
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            color: var(--accent-neon);
+            margin-bottom: 5px;
+            font-size: 24px;
+            letter-spacing: 1px;
+            font-weight: 800;
+        }
+        
+        .sidebar .sub {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 35px;
+            text-transform: uppercase;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 15px 25px;
+            text-align: left;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+            border-left: 4px solid transparent;
+        }
+
+        .menu-btn:hover, .menu-btn.active {
+            color: var(--text);
+            background-color: rgba(255, 255, 255, 0.03);
+            border-left-color: var(--accent-neon);
+        }
+
+        /* Área Principal */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        /* Painel de Status */
+        .header-status {
+            display: flex;
+            justify-content: space-between;
+            background-color: var(--bg-card);
+            padding: 15px 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+        }
+
+        .status-item span {
+            color: var(--text-muted);
+            font-size: 11px;
+            display: block;
+            text-transform: uppercase;
+        }
+
+        .status-item strong {
+            color: var(--text);
+            font-size: 18px;
+        }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* Tabelas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--bg-card);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 14px 18px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: rgba(0, 0, 0, 0.3);
+            color: var(--text-muted);
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .badge-pos {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            background-color: #1e293b;
+            color: #94a3b8;
+        }
+
+        .campo-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .campo-futebol {
+            width: 450px;
+            height: 550px;
+            background-color: #1b4d22;
+            border: 4px solid #ffffff;
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+            overflow: hidden;
+        }
+
+        .linha-meio {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .circulo-central {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100px;
+            height: 100px;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .grande-area-top {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 220px;
+            height: 80px;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-top: none;
+            transform: translateX(-50%);
+        }
+
+        .grande-area-bot {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 220px;
+            height: 80px;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-bottom: none;
+            transform: translateX(-50%);
+        }
+
+        .jogador-bola {
+            width: 36px;
+            height: 36px;
+            background-color: #ffffff;
+            color: #000000;
+            border: 3px solid var(--accent-neon);
+            border-radius: 50%;
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: move;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+            user-select: none;
+            touch-action: none;
+        }
+
+        .instrucoes-taticas {
+            flex: 1;
+            background-color: var(--bg-card);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .btn-jogar {
+            background-color: var(--accent-neon);
+            color: #000;
+            border: none;
+            padding: 18px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        select {
+            background: #0b0f19;
+            color: white;
+            border: 1px solid var(--border);
+            padding: 10px 15px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>FootManAdmin</h2>
+        <div class="sub">Premier League Edition</div>
+        
+        <button class="menu-btn active" onclick="mudarTela('elenco', this)">📋 Elenco</button>
+        <button class="menu-btn" onclick="mudarTela('tactics', this)">📐 Táticas</button>
+        <button class="menu-btn" onclick="mudarTela('mercado', this)">🤝 Transferências</button>
+        <button class="menu-btn" onclick="mudarTela('classificacao', this)">🏆 Campeonato</button>
+        <button class="menu-btn" onclick="mudarTela('proximo-jogo', this)">⚽ Próximo Jogo</button>
+    </div>
+
+    <div class="main-content">
+        
+        <div class="header-status">
+            <div class="status-item">
+                <span>Seu Clube</span>
+                <strong id="meu-time-nome" style="color: var(--accent-neon);">Manchester City</strong>
+            </div>
+            <div class="status-item">
+                <span>Orçamento do Clube</span>
+                <strong id="financas-txt" style="color: #4caf50;">£ 80.000.000</strong>
+            </div>
+            <div class="status-item">
+                <span>Próxima Rodada</span>
+                <strong id="status-adversario">vs Arsenal</strong>
+            </div>
+        </div>
+
+        <!-- 1. TELA: ELENCO -->
+        <div id="tela-elenco" class="screen active">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>Gestão do Elenco</h2>
+                <div>
+                    <label>Trocar de Time: </label>
+                    <select id="select-time-usuario" onchange="trocarTimeUsuario(this.value)">
+                        <!-- Preenchido via JS com os 20 times -->
+                    </select>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Posição</th>
+                        <th>Nome</th>
+                        <th>Idade</th>
+                        <th>Força (OVR)</th>
+                        <th>Valor de Mercado</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-jogadores"></tbody>
+            </table>
+        </div>
+
+        <!-- 2. TELA: TÁTICAS -->
+        <div id="tela-tactics" class="screen">
+            <h2>Quadro Tático Interativo</h2>
+            <div class="campo-container">
+                <div class="campo-futebol" id="campo-futebol">
+                    <div class="grande-area-top"></div>
+                    <div class="linha-meio"></div>
+                    <div class="circulo-central"></div>
+                    <div class="grande-area-bot"></div>
+                </div>
+                <div class="instrucoes-taticas">
+                    <h3>Configurações de Jogo</h3>
+                    <label style="display:block; margin-bottom: 8px;"><b>Mentalidade:</b></label>
+                    <select style="width: 100%;">
+                        <option>Equilibrada</option>
+                        <option style="color: var(--danger);">Ofensiva</option>
+                        <option style="color: #50b6ff;">Retranca</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. TELA: TRANSFERÊNCIAS -->
+        <div id="tela-mercado" class="screen">
+            <h2>Mercado Global da Premier League</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Clube Atual</th>
+                        <th>Posição</th>
+                        <th>Nome</th>
+                        <th>Força (OVR)</th>
+                        <th>Preço</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-mercado"></tbody>
+            </table>
+        </div>
+
+        <!-- 4. TELA: CAMPEONATO -->
+        <div id="tela-classificacao" class="screen">
+            <h2>Tabela da Premier League</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pos</th>
+                        <th>Clube</th>
+                        <th>Pts</th>
+                        <th>J</th>
+                        <th>V</th>
+                        <th>E</th>
+                        <th>D</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-campeonato-corpo"></tbody>
+            </table>
+        </div>
+
+        <!-- 5. TELA: PRÓXIMO JOGO -->
+        <div id="tela-proximo-jogo" class="screen">
+            <h2>Calendário de Jogos</h2>
+            <div style="background: var(--bg-card); padding: 40px; text-align: center; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 25px;">
+                <h3 id="placar-agendado" style="font-size: 28px; margin: 15px 0;">Manchester City vs Arsenal</h3>
+            </div>
+            <button class="btn-jogar" onclick="alert('Partida pronta! Próximo passo: o motor de simulação completa da tabela.')">RODADA DE JOGOS</button>
+        </div>
+
+    </div>
+
+    <script>
+        // BANCO DE DADOS OFICIAL DE TIMES DA PREMIER LEAGUE
+        const nomesTimesPL = [
+            "Arsenal", "Aston Villa", "Bournemouth", "Brentford", "Brighton", 
+            "Chelsea", "Crystal Palace", "Everton", "Fulham", "Ipswich Town", 
+            "Leicester City", "Liverpool", "Manchester City", "Manchester United", "Newcastle United", 
+            "Nottingham Forest", "Southampton", "Tottenham Hotspur", "West Ham", "Wolverhampton"
+        ];
+
+        // Craques principais para dar realismo a cada elenco
+        const estrelasPorTime = {
+            "Manchester City": [
+                {pos:"ATA", nome:"Erling Haaland", idade:25, forca:92},
+                {pos:"MEI", nome:"Kevin De Bruyne", idade:34, forca:91},
+                {pos:"MEI", nome:"Rodri", idade:29, forca:91}
+            ],
+            "Arsenal": [
+                {pos:"MEI", nome:"Bukayo Saka", idade:24, forca:88},
+                {pos:"MEI", nome:"Martin Ødegaard", idade:27, forca:89},
+                {pos:"DEF", nome:"William Saliba", idade:25, forca:87}
+            ],
+            "Liverpool": [
+                {pos:"ATA", nome:"Mohamed Salah", idade:34, forca:90},
+                {pos:"DEF", nome:"Virgil van Dijk", idade:34, forca:89},
+                {pos:"GOL", nome:"Alisson Becker", idade:33, forca:89}
+            ],
+            "Manchester United": [
+                {pos:"MEI", nome:"Bruno Fernandes", idade:31, forca:86},
+                {pos:"ATA", nome:"Marcus Rashford", idade:28, forca:83}
+            ],
+            "Chelsea": [
+                {pos:"MEI", nome:"Cole Palmer", idade:24, forca:86},
+                {pos:"MEI", nome:"Enzo Fernández", idade:25, forca:83}
+            ],
+            "Tottenham Hotspur": [
+                {pos:"ATA", nome:"Heung-min Son", idade:33, forca:86},
+                {pos:"MEI", nome:"James Maddison", idade:29, forca:84}
+            ],
+            "Aston Villa": [
+                {pos:"GOL", nome:"Emi Martínez", idade:33, forca:87},
+                {pos:"ATA", nome:"Ollie Watkins", idade:30, forca:84}
+            ],
+            "Newcastle United": [
+                {pos:"ATA", nome:"Alexander Isak", idade:26, forca:85},
+                {pos:"MEI", nome:"Bruno Guimarães", idade:28, forca:85}
+            ]
+        };
+
+        let bancoDeDadosClubes = {};
+        let timeAtualUsuario = "Manchester City";
+        let orcamento = 80000000;
+
+        // SISTEMA INTELIGENTE DE GERAÇÃO DE ELENCOS COMPLETOS (22 JOGADORES POR TIME)
+        function gerarTodosOsTimes() {
+            nomesTimesPL.forEach(nomeTime => {
+                let elenco = [];
+                
+                // 1. Injeta as estrelas reais do time se existirem no nosso banco
+                if (estrelasPorTime[nomeTime]) {
+                    estrelasPorTime[nomeTime].forEach(craque => {
+                        elenco.push({
+                            pos: craque.pos,
+                            nome: craque.nome,
+                            idade: craque.idade,
+                            forca: craque.forca,
+                            valor: craque.forca * 900000
+                        });
+                    });
+                }
+
+                // 2. Preenche automaticamente o resto do time com posições corretas até dar 22 jogadores
+                const posicoesNecessarias = ["GOL", "GOL", "DEF", "DEF", "DEF", "DEF", "DEF", "DEF", "MEI", "MEI", "MEI", "MEI", "MEI", "MEI", "ATA", "ATA", "ATA", "ATA"];
+                
+                // Define o nível de força médio baseado no escalão do time
+                let forcaBase = 72; // Times menores
+                if(["Manchester City", "Arsenal", "Liverpool"].includes(nomeTime)) forcaBase = 82;
+                else if(["Chelsea", "Manchester United", "Tottenham", "Aston Villa", "Newcastle"].includes(nomeTime)) forcaBase = 79;
+
+                let contadorPos = 1;
+                posicoesNecessarias.forEach(pos => {
+                    if (elenco.length < 22) {
+                        let variacaoForca = Math.floor(Math.random() * 7) - 3; // -3 a +3 de força interna
+                        let forcaFinal = forcaBase + variacaoForca;
+                        
+                        elenco.push({
+                            pos: pos,
+                            nome: `${pos} ${nomeTime.split(' ')[0]} #${contadorPos++}`,
+                            idade: Math.floor(Math.random() * 15) + 18, // 18 a 33 anos
+                            forca: forcaFinal,
+                            valor: forcaFinal * 600000
+                        });
+                    }
+                });
+
+                // Salva o clube gerado no banco de dados geral
+                bancoDeDadosClubes[nomeTime] = {
+                    nome: nomeTime,
+                    elenco: elenco,
+                    pontos: 0, jogos: 0, vitorias: 0, empates: 0, derrotas: 0
+                };
+            });
+        }
+
+        // RENDERIZAÇÃO DE TELAS
+        function carregarElencoNaTela() {
+            const tabela = document.getElementById("tabela-jogadores");
+            tabela.innerHTML = "";
+            
+            const time = bancoDeDadosClubes[timeAtualUsuario];
+            // Ordena por força para ficar bonito
+            time.elenco.sort((a, b) => b.forca - a.forca);
+
+            time.elenco.forEach(j => {
+                tabela.innerHTML += `
+                    <tr>
+                        <td><span class="badge-pos">${j.pos}</span></td>
+                        <td><b>${j.nome}</b></td>
+                        <td>${j.idade} anos</td>
+                        <td style="color: var(--accent-neon); font-weight: bold;">${j.forca}</td>
+                        <td>£ ${j.valor.toLocaleString('en-US')}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function carregarMercadoNaTela() {
+            const tabela = document.getElementById("tabela-mercado");
+            tabela.innerHTML = "";
+
+            // Mostra alguns jogadores de outros times disponíveis para negócio
+            nomesTimesPL.forEach(nomeTime => {
+                if(nomeTime !== timeAtualUsuario) {
+                    const jogadorMercado = bancoDeDadosClubes[nomeTime].elenco[0]; // Pega o melhor de cada time para vender
+                    tabela.innerHTML += `
+                        <tr>
+                            <td style="color: var(--text-muted);">${nomeTime}</td>
+                            <td><span class="badge-pos">${jogadorMercado.pos}</span></td>
+                            <td><b>${jogadorMercado.nome}</b></td>
+                            <td style="color: #ffeb3b; font-weight: bold;">${jogadorMercado.forca}</td>
+                            <td style="color: #4caf50;">£ ${(jogadorMercado.valor * 1.2).toLocaleString('en-US')}</td>
+                            <td><button class="action-btn" style="background:var(--accent-neon); color:#000; font-weight:bold; border:none;" onclick="alert('Funcionalidade de negociação em desenvolvimento!')">Propor Compra</button></td>
+                        </tr>
+                    `;
+                }
+            });
+        }
+
+        function carregarClassificacaoNaTela() {
+            const tabela = document.getElementById("tabela-campeonato-corpo");
+            tabela.innerHTML = "";
+
+            // Converte objeto de times para array e ordena por pontos
+            let listaOrdenada = Object.values(bancoDeDadosClubes).sort((a,b) => b.pontos - a.pontos);
+
+            listaOrdenada.forEach((time, index) => {
+                let styleNegrito = time.nome === timeAtualUsuario ? "font-weight: bold; color: var(--accent-neon);" : "";
+                tabela.innerHTML += `
+                    <tr style="${styleNegrito}">
+                        <td>${index + 1}</td>
+                        <td>${time.nome}</td>
+                        <td><b>${time.pontos}</b></td>
+                        <td>${time.jogos}</td>
+                        <td>${time.vitorias}</td>
+                        <td>${time.empates}</td>
+                        <td>${time.derrotas}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function popularSelectTimes() {
+            const select = document.getElementById("select-time-usuario");
+            select.innerHTML = "";
+            nomesTimesPL.forEach(nome => {
+                let selected = nome === timeAtualUsuario ? "selected" : "";
+                select.innerHTML += `<option value="${nome}" ${selected}>${nome}</option>`;
+            });
+        }
+
+        function trocarTimeUsuario(novoTime) {
+            timeAtualUsuario = novoTime;
+            document.getElementById("meu-time-nome").innerText = novoTime;
+            
+            // Define o adversário automático como o próximo da lista para ilustrar
+            let indexAdversario = (nomesTimesPL.indexOf(novoTime) + 1) % 20;
+            let adversario = nomesTimesPL[indexAdversario];
+            document.getElementById("status-adversario").innerText = `vs ${adversario}`;
+            document.getElementById("placar-agendado").innerText = `${novoTime} vs ${adversario}`;
+
+            carregarElencoNaTela();
+            carregarMercadoNaTela();
+            carregarClassificacaoNaTela();
+        }
+
+        // POSIÇÕES DO QUADRO TÁTICO (4-4-2 PADRÃO)
+        const posicoesIniciais = [
+            { pos: "GOL", x: 46, y: 88 }, { pos: "ZAG", x: 25, y: 72 }, { pos: "ZAG", x: 67, y: 72 },
+            { pos: "LD",  x: 8,  y: 65 }, { pos: "LE",  x: 84, y: 65 }, { pos: "VOL", x: 35, y: 48 }, 
+            { pos: "MEI", x: 58, y: 48 }, { pos: "MD",  x: 12, y: 40 }, { pos: "ME",  x: 80, y: 40 },
+            { pos: "ATA", x: 30, y: 15 }, { pos: "ATA", x: 62, y: 15 }
+        ];
+
+        function inicializarQuadroTatico() {
+            const campo = document.getElementById("campo-futebol");
+            posicoesIniciais.forEach(p => {
+                const bola = document.createElement("div");
+                bola.className = "jogador-bola";
+                bola.innerText = p.pos;
+                bola.style.left = p.x + "%";
+                bola.style.top = p.y + "%";
+                tornarElementoArrastavel(bola, campo);
+                campo.appendChild(bola);
+            });
+        }
+
+        function tornarElementoArrastavel(elemento, container) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            elemento.onmousedown = dragMouseDown;
+            elemento.ontouchstart = dragMouseDown;
+
+            function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos3 = e.clientX || e.touches[0].clientX;
+                pos4 = e.clientY || e.touches[0].clientY;
+                document.onmouseup = closeDragElement;
+                document.ontouchend = closeDragElement;
+                document.onmousemove = elementDrag;
+                document.ontouchmove = elementDrag;
+            }
+
+            function elementDrag(e) {
+                e = e || window.event;
+                let clientX = e.clientX || (e.touches ? e.touches[0].clientX : pos3);
+                let clientY = e.clientY || (e.touches ? e.touches[0].clientY : pos4);
+                pos1 = pos3 - clientX; pos2 = pos4 - clientY;
+                pos3 = clientX; pos4 = clientY;
+
+                let novoTop = elemento.offsetTop - pos2;
+                let novoLeft = elemento.offsetLeft - pos1;
+
+                if (novoTop >= 0 && novoTop <= (container.clientHeight - elemento.clientHeight)) elemento.style.top = novoTop + "px";
+                if (novoLeft >= 0 && novoLeft <= (container.clientWidth - elemento.clientWidth)) elemento.style.left = novoLeft + "px";
+            }
+
+            function closeDragElement() {
+                document.onmouseup = null; document.onmousemove = null;
+                document.ontouchend = null; document.ontouchmove = null;
+            }
+        }
+
+        function mudarTela(telaId, botao) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tela-${telaId}`).classList.add('active');
+            botao.classList.add('active');
+        }
+
+        // BOOT DO JOGO
+        gerarTodosOsTimes();
+        popularSelectTimes();
+        trocarTimeUsuario("Manchester City");
+        inicializarQuadroTatico();
+    </script>
+</body>
+</html>
