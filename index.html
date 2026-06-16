@@ -3,109 +3,292 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brasfoot IA - Protótipo</title>
+    <title>FutManager IA</title>
     <style>
-        /* CSS: Estilizando nosso Manager */
+        /* Cores inspiradas no Football Manager (Dark Mode) */
+        :root {
+            --bg-principal: #121824;
+            --bg-card: #1c2434;
+            --bg-sidebar: #0e131f;
+            --accent: #00ff87; /* Verde Brasfoot */
+            --text: #ffffff;
+            --text-muted: #8a99ad;
+            --border: #2c374e;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #1a1a1a;
-            color: #ffffff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg-principal);
+            color: var(--text);
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Menu Lateral (Sidebar) */
+        .sidebar {
+            width: 240px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            align-items: center;
+            padding: 20px 0;
         }
-        .container {
-            max-width: 600px;
-            width: 100%;
-            background-color: #2d2d2d;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+
+        .sidebar h2 {
             text-align: center;
+            color: var(--accent);
+            margin-bottom: 30px;
+            font-size: 22px;
+            letter-spacing: 1px;
         }
-        h1 { color: #4CAF50; margin-top: 0; }
-        .time-box {
-            background: #3d3d3d;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 4px;
-            border-left: 5px solid #4CAF50;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
+
+        .menu-btn {
+            background: none;
             border: none;
-            padding: 12px 24px;
+            color: var(--text-muted);
+            padding: 15px 25px;
+            text-align: left;
             font-size: 16px;
-            font-weight: bold;
-            border-radius: 4px;
             cursor: pointer;
             transition: 0.2s;
-            margin-top: 15px;
+            border-left: 4px solid transparent;
         }
-        button:hover { background-color: #45a049; }
-        .placar {
-            font-size: 32px;
+
+        .menu-btn:hover, .menu-btn.active {
+            color: var(--text);
+            background-color: rgba(255, 255, 255, 0.05);
+            border-left-color: var(--accent);
+        }
+
+        /* Área de Conteúdo Principal */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .header-status {
+            display: flex;
+            justify-content: space-between;
+            background-color: var(--bg-card);
+            padding: 15px 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+        }
+
+        .status-item span {
+            color: var(--text-muted);
+            font-size: 12px;
+            display: block;
+        }
+
+        .status-item strong {
+            color: var(--accent);
+            font-size: 18px;
+        }
+
+        /* Telas (Escondidas por padrão, exceto a ativa) */
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Tabelas de Jogadores e Classificação */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--bg-card);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: rgba(0, 0, 0, 0.2);
+            color: var(--text-muted);
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        tr:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .badge-pos {
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 11px;
             font-weight: bold;
-            margin: 20px 0;
-            color: #ffeb3b;
-            letter-spacing: 2px;
+            background-color: #334155;
+        }
+
+        .btn-jogar {
+            background-color: var(--accent);
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.2s;
+        }
+
+        .btn-jogar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 255, 135, 0.3);
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Mini Manager IA</h1>
-        <p>Simulador de Partida Básico</p>
+    <!-- MENU LATERAL ESTILO FM/BRASFOOT -->
+    <div class="sidebar">
+        <h2>FUTMANAGER IA</h2>
+        <button class="menu-btn active" onclick="mudarTela('elenco', this)">📋 Elenco</button>
+        <button class="menu-btn" onclick="mudarTela('tactics', this)">📐 Tática</button>
+        <button class="menu-btn" onclick="mudarTela('classificacao', this)">🏆 Classificação</button>
+        <button class="menu-btn" onclick="mudarTela('proximo-jogo', this)">⚽ Próximo Jogo</button>
+    </div>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <div class="main-content">
         
-        <div class="time-box">
-            <h3 id="nome-time1">Time A (Força: --)</h3>
-        </div>
-        
-        <div class="placar" id="placar-jogo">VS</div>
-        
-        <div class="time-box">
-            <h3 id="nome-time2">Time B (Força: --)</h3>
+        <!-- Barra de Status Superior (Dinâmica) -->
+        <div class="header-status">
+            <div class="status-item">
+                <span>SEU CLUBE</span>
+                <strong id="status-time">Piraporinha FC</strong>
+            </div>
+            <div class="status-item">
+                <span>FINANÇAS</span>
+                <strong style="color: #4caf50;">R$ 15.000.000</strong>
+            </div>
+            <div class="status-item">
+                <span>PRÓXIMO ADVERSÁRIO</span>
+                <strong id="status-adversario">Íbis SC</strong>
+            </div>
         </div>
 
-        <button onclick="jogarPartida()">Simular Partida</button>
+        <!-- TELA 1: ELENCO -->
+        <div id="tela-elenco" class="screen active">
+            <h2>Elenco do Seu Time</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Posição</th>
+                        <th>Nome</th>
+                        <th>Idade</th>
+                        <th>Força (OVER)</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-jogadores">
+                    <!-- Preenchido por IA/JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TELA 2: TÁTICA -->
+        <div id="tela-tactics" class="screen">
+            <h2>Formação Tática</h2>
+            <p>Escolha sua mentalidade para o próximo jogo:</p>
+            <select style="padding: 10px; background: var(--bg-card); color: white; border: 1px solid var(--border); border-radius: 4px;">
+                <option>4-3-3 (Ofensivo)</option>
+                <option selected>4-4-2 (Equilibrado)</option>
+                <option>5-3-2 (Defensivo)</option>
+            </select>
+        </div>
+
+        <!-- TELA 3: CLASSIFICAÇÃO -->
+        <div id="tela-classificacao" class="screen">
+            <h2>Tabela do Campeonato</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pos</th>
+                        <th>Clube</th>
+                        <th>Pts</th>
+                        <th>J</th>
+                        <th>V</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td>Piraporinha FC</td><td>0</td><td>0</td><td>0</td></tr>
+                    <tr><td>2</td><td>Íbis SC</td><td>0</td><td>0</td><td>0</td></tr>
+                    <tr><td>3</td><td>Bangu Atlético</td><td>0</td><td>0</td><td>0</td></tr>
+                    <tr><td>4</td><td>XV de Piracicaba</td><td>0</td><td>0</td><td>0</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TELA 4: PRÓXIMO JOGO -->
+        <div id="tela-proximo-jogo" class="screen">
+            <h2>Rodada 1</h2>
+            <div style="background: var(--bg-card); padding: 30px; text-align: center; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px;">
+                <h3 style="font-size: 24px;">Piraporinha FC VS Íbis SC</h3>
+                <p style="color: var(--text-muted);">Estádio Municipal</p>
+            </div>
+            <button class="btn-jogar" onclick="alert('Simulando jogo... Próximo passo da IA!')">INICIAR PARTIDA</button>
+        </div>
+
     </div>
 
     <script>
-        // JAVASCRIPT: A lógica do jogo
-        // 1. Criando os times (Base de dados simples)
-        const timeMandante = { nome: "Madrid FC", forca: 85 };
-        const timeVisitante = { nome: "Catalunha FC", forca: 82 };
+        // Banco de dados dos jogadores do seu time
+        const jogadores = [
+            { pos: "GOL", nome: "Mão de Alface", idade: 28, forca: 65 },
+            { pos: "DEF", nome: "Zagueiro Botina", idade: 31, forca: 70 },
+            { pos: "DEF", nome: "Lateral Avenida", idade: 22, forca: 68 },
+            { pos: "MEI", nome: "Maestro Cansado", idade: 34, forca: 74 },
+            { pos: "MEI", nome: "Volante Pitbull", idade: 26, forca: 71 },
+            { pos: "ATA", nome: "Artilheiro de IA", idade: 21, forca: 75 },
+            { pos: "ATA", nome: "Chuta Fofo", idade: 19, forca: 60 }
+        ];
 
-        // Atualiza a tela com os dados iniciais
-        document.getElementById('nome-time1').innerText = `${timeMandante.nome} (Força: ${timeMandante.forca})`;
-        document.getElementById('nome-time2').innerText = `${timeVisitante.nome} (Força: ${timeVisitante.forca})`;
-
-        // 2. Motor de Simulação (Coração do jogo)
-        function jogarPartida() {
-            // Fator sorte/imprevisto (número aleatório de 0 a 20)
-            const sorteMandante = Math.floor(Math.random() * 21);
-            const sorteVisitante = Math.floor(Math.random() * 21);
-
-            // Pontuação final que define os gols
-            const pontuacaoA = timeMandante.forca + sorteMandante;
-            const pontuacaoB = timeVisitante.forca + sorteVisitante;
-
-            // Convertendo a pontuação em gols de forma matemática simples
-            // Se a pontuação for muito alta, faz mais gols.
-            let golsA = Math.floor((pontuacaoA - 75) / 5);
-            let golsB = Math.floor((pontuacaoB - 75) / 5);
-
-            // Evitar gols negativos caso a força + sorte seja muito baixa
-            golsA = Math.max(0, golsA);
-            golsB = Math.max(0, golsB);
-
-            // Exibe o resultado na tela
-            document.getElementById('placar-jogo').innerText = `${golsA} x ${golsB}`;
+        // Função para carregar os jogadores na tabela
+        function renderizarElenco() {
+            const tabela = document.getElementById("tabela-jogadores");
+            tabela.innerHTML = "";
+            jogadores.forEach(j => {
+                tabela.innerHTML += `
+                    <tr>
+                        <td><span class="badge-pos">${j.pos}</span></td>
+                        <td><b>${j.nome}</b></td>
+                        <td>${j.idade} anos</td>
+                        <td style="color: #00ff87; font-weight: bold;">${j.forca}</td>
+                    </tr>
+                `;
+            });
         }
+
+        // Sistema de navegação de menus (Abas)
+        function mudarTela(telaId, botao) {
+            // Esconde todas as telas
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            // Desativa todos os botões do menu
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            
+            // Mostra a tela selecionada e ativa o botão correspondente
+            document.getElementById(`tela-${telaId}`).classList.add('active');
+            botao.classList.add('active');
+        }
+
+        // Inicializa o elenco ao abrir o site
+        renderizarElenco();
     </script>
 </body>
 </html>
